@@ -7,7 +7,8 @@ class Web3ModalViewModel: ObservableObject {
     private(set) var w3mApiInteractor: W3MAPIInteractor
     private(set) var signInteractor: SignInteractor
     private(set) var blockchainApiInteractor: BlockchainAPIInteractor
-    
+    private let supportsAuthenticatedSession: Bool
+
     private var disposeBag = Set<AnyCancellable>()
     
     init(
@@ -15,13 +16,15 @@ class Web3ModalViewModel: ObservableObject {
         store: Store,
         w3mApiInteractor: W3MAPIInteractor,
         signInteractor: SignInteractor,
-        blockchainApiInteractor: BlockchainAPIInteractor
+        blockchainApiInteractor: BlockchainAPIInteractor,
+        supportsAuthenticatedSession: Bool
     ) {
         self.router = router
         self.store = store
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
+        self.supportsAuthenticatedSession = supportsAuthenticatedSession
 
         Web3Modal.instance.sessionEventPublisher
             .receive(on: DispatchQueue.main)
@@ -52,7 +55,7 @@ class Web3ModalViewModel: ObservableObject {
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
-                if Web3Modal.config.authRequestParams != nil {
+                if supportsAuthenticatedSession {
                     self.handleSIWEFallback()
                 } else {
                     self.handleNewSession(session: session)

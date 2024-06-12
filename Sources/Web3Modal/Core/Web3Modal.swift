@@ -141,7 +141,8 @@ public class Web3Modal {
             store: store,
             w3mApiInteractor: w3mApiInteractor,
             signInteractor: signInteractor,
-            blockchainApiInteractor: blockchainApiInteractor
+            blockchainApiInteractor: blockchainApiInteractor,
+            supportsAuthenticatedSession: (config.authRequestParams != nil)
         )
         
         Task {
