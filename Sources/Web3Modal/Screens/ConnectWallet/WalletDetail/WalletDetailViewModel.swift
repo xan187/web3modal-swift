@@ -55,7 +55,32 @@ class WalletDetailViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
     }
-    
+
+    func cancel() async throws {
+        store.SIWEFallbackState = false
+        guard let topic = store.session?.topic else { return }
+        try await Web3Modal.instance.disconnect(topic: topic)
+    }
+
+    func signSIWE() async throws {
+        DispatchQueue.main.async { [weak self] in
+            self?.store.SIWEFallbackState = false
+        }
+        guard let account = store.account?.account(),
+            let authRequestParams = Web3Modal.config.authRequestParams else { return }
+
+        let authPayload = AuthPayload(requestParams: authRequestParams, iat: DefaultIATProvider().iat)
+        let siweMessage = try Sign.instance.formatAuthMessage(payload: authPayload, account: account)
+
+        let rpcRequest: W3MJSONRPC = .personal_sign(address: account.address, message: siweMessage)
+        try await Web3Modal.instance.request(rpcRequest)
+        store.siweRequestId = rpcRequest.id
+        navigateToDeepLink(
+            wallet: wallet,
+            preferBrowser: preferredPlatform == .browser
+        )
+    }
+
     func handle(_ event: Event) {
         switch event {
         case .didTapCopy:

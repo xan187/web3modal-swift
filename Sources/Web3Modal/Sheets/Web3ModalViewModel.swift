@@ -55,10 +55,11 @@ class Web3ModalViewModel: ObservableObject {
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
+                self.handleNewSession(session: session)
                 if supportsAuthenticatedSession {
                     self.handleSIWEFallback()
                 } else {
-                    self.handleNewSession(session: session)
+                    self.routeToProfile()
                 }
             }
             .store(in: &disposeBag)
@@ -71,6 +72,7 @@ class Web3ModalViewModel: ObservableObject {
                 case .success(let (session, _)):
                     if let session = session {
                         self?.handleNewSession(session: session)
+                        self?.routeToProfile()
                     }
                 case .failure(let error):
                     if error == .methodUnsupported {
@@ -140,7 +142,6 @@ class Web3ModalViewModel: ObservableObject {
     }
 
     private func handleNewSession(session: Session) {
-        router.setRoute(Router.AccountSubpage.profile)
         store.connectedWith = .wc
         store.account = .init(from: session)
         store.session = session
@@ -154,13 +155,17 @@ class Web3ModalViewModel: ObservableObject {
 
         fetchIdentity()
 
+    }
+
+    private func routeToProfile() {
+        router.setRoute(Router.AccountSubpage.profile)
         withAnimation {
             store.isModalShown = false
         }
     }
 
     private func handleSIWEFallback() {
-
+        store.SIWEFallbackState = true
     }
 
 
