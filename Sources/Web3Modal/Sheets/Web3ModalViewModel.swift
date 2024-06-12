@@ -52,7 +52,11 @@ class Web3ModalViewModel: ObservableObject {
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
-                self.handleNewSession(session: session)
+                if Web3Modal.config.authRequestParams != nil {
+                    self.handleSIWEFallback()
+                } else {
+                    self.handleNewSession(session: session)
+                }
             }
             .store(in: &disposeBag)
 
@@ -66,10 +70,13 @@ class Web3ModalViewModel: ObservableObject {
                         self?.handleNewSession(session: session)
                     }
                 case .failure(let error):
-                    // Handle the error similarly to how other errors are handled in the class
-                    store.toast = .init(style: .error, message: "Authentication error: \(error.localizedDescription)")
-                    Web3Modal.config.onError(error)
-                    self?.store.retryShown = true
+                    if error == .methodUnsupported {
+                        break
+                    } else {
+                        store.toast = .init(style: .error, message: "Authentication error: \(error.localizedDescription)")
+                        Web3Modal.config.onError(error)
+                        self?.store.retryShown = true
+                    }
                 }
             }
             .store(in: &disposeBag)
@@ -147,6 +154,10 @@ class Web3ModalViewModel: ObservableObject {
         withAnimation {
             store.isModalShown = false
         }
+    }
+
+    private func handleSIWEFallback() {
+
     }
 
 
