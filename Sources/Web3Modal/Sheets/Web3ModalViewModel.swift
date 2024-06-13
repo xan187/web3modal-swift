@@ -1,6 +1,11 @@
 import Combine
 import SwiftUI
 
+public enum SIWEAuthenticationError: Error {
+    case requestRejected
+    case messageVerificationFailed
+}
+
 class Web3ModalViewModel: ObservableObject {
     private(set) var router: Router
     private(set) var store: Store
@@ -257,14 +262,25 @@ class Web3ModalViewModel: ObservableObject {
                         } catch {
                             guard let self = self else { return }
 
+                            Web3Modal.instance.SIWEAuthenticationPublisherSubject.send(Result.failure(
+                                .messageVerificationFailed))
                             DispatchQueue.main.async {
                                 self.store.toast = .init(style: .error, message: error.localizedDescription)
+                                guard let topic = self.store.session?.topic else { return }
+                                Task {try await Web3Modal.instance.disconnect(topic: topic)}
+
                             }
                         }
                     }
                 case .error(let error):
-                    guard let self = self else { return }
-                    self.store.toast = .init(style: .error, message: error.message)
+                    DispatchQueue.main.async {
+                        Web3Modal.instance.SIWEAuthenticationPublisherSubject.send(Result.failure(
+                            .requestRejected))
+                        guard let self = self else { return }
+                        self.store.SIWEFallbackState = false
+                        guard let topic = self.store.session?.topic else { return }
+                        Task {try await Web3Modal.instance.disconnect(topic: topic)}
+                    }
                 }
             }
         }.store(in: &disposeBag)
