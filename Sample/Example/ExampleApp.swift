@@ -90,6 +90,25 @@ class ExampleApp: App {
         Sign.instance.setLogging(level: .debug)
         Networking.instance.setLogging(level: .debug)
         Relay.instance.setLogging(level: .debug)
+
+        Web3Modal.instance.authResponsePublisher.sink { (id: RPCID, result: Result<(Session?, [Cacao]), AuthError>) in
+            switch result {
+            case .success((_, _)):
+                AlertPresenter.present(message: "User authenticated", type: .success)
+            case .failure(let error):
+                AlertPresenter.present(message: "User authentication error: \(error)", type: .error)
+
+            }
+        }.store(in: &disposeBag)
+
+        Web3Modal.instance.SIWEAuthenticationPublisher.sink { result in
+            switch result {
+            case .success((let message, let signature)):
+                AlertPresenter.present(message: "User authenticated", type: .success)
+            case .failure(let error):
+                AlertPresenter.present(message: "User authentication error: \(error)", type: .error)
+            }
+        }.store(in: &disposeBag)
     }
 
     var body: some Scene {

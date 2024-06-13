@@ -255,6 +255,8 @@ class Web3ModalViewModel: ObservableObject {
 
                             guard let self = self else { return }
 
+                            Web3Modal.instance.SIWEAuthenticationPublisherSubject.send(.success((siweMessage, signature)))
+
                             DispatchQueue.main.async {
                                 self.router.setRoute(Router.AccountSubpage.profile)
                                 self.store.isModalShown = false
