@@ -376,4 +376,14 @@ public class Web3ModalClient {
     public func disableAnalytics() {
         analyticsService.disable()
     }
+
+#if DEBUG
+    public func disableAuthenticatedSessions() {
+        Web3Modal.viewModel.authenticatedSessionsDisabled = true
+    }
+
+    public func enableAuthenticatedSessions() {
+        Web3Modal.viewModel.authenticatedSessionsDisabled = false
+    }
+#endif
 }

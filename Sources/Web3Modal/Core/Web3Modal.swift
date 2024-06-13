@@ -226,6 +226,7 @@ public class Web3Modal {
             try? await w3mApiInteractor.fetchWalletImages(for: [wallet])
         }
     }
+
 }
 
 #if canImport(UIKit)

@@ -13,6 +13,9 @@ class Web3ModalViewModel: ObservableObject {
     private(set) var signInteractor: SignInteractor
     private(set) var blockchainApiInteractor: BlockchainAPIInteractor
     private let supportsAuthenticatedSession: Bool
+#if DEBUG
+    var authenticatedSessionsDisabled = false
+#endif
 
     private var disposeBag = Set<AnyCancellable>()
 
@@ -61,8 +64,15 @@ class Web3ModalViewModel: ObservableObject {
 
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
-            .sink { session in
+            .sink { [weak self] session in
+                guard let self = self else { return }
                 self.handleNewSession(session: session)
+                #if DEBUG
+                if self.authenticatedSessionsDisabled {
+                    self.routeToProfile()
+                    return
+                }
+                #endif
                 if supportsAuthenticatedSession {
                     self.handleSIWEFallback()
                 } else {
