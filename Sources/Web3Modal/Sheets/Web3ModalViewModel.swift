@@ -10,7 +10,7 @@ class Web3ModalViewModel: ObservableObject {
     private let supportsAuthenticatedSession: Bool
 
     private var disposeBag = Set<AnyCancellable>()
-    
+
     init(
         router: Router,
         store: Store,
@@ -25,6 +25,8 @@ class Web3ModalViewModel: ObservableObject {
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
         self.supportsAuthenticatedSession = supportsAuthenticatedSession
+
+        setupSIWEFallback()
 
         Web3Modal.instance.sessionEventPublisher
             .receive(on: DispatchQueue.main)
@@ -232,4 +234,39 @@ class Web3ModalViewModel: ObservableObject {
     }
 
     private let namespaceRegex = try! NSRegularExpression(pattern: "^[-a-z0-9]{3,8}$")
+
+    private func setupSIWEFallback() {
+        Sign.instance.sessionResponsePublisher.sink { [weak self] response in
+            if response.id == self?.store.siweRequestId {
+                switch response.result {
+                case .response(let result):
+                    guard let signature = try? result.get(String.self),
+                          let siweMessage = self?.store.siweMessage,
+                          let account = self?.store.account?.account() else { return }
+
+                    Task { [weak self] in
+                        do {
+                            try await Sign.instance.verifySIWE(signature: signature, message: siweMessage, address: account.address, chainId: account.blockchainIdentifier)
+
+                            guard let self = self else { return }
+
+                            DispatchQueue.main.async {
+                                self.router.setRoute(Router.AccountSubpage.profile)
+                                self.store.isModalShown = false
+                            }
+                        } catch {
+                            guard let self = self else { return }
+
+                            DispatchQueue.main.async {
+                                self.store.toast = .init(style: .error, message: error.localizedDescription)
+                            }
+                        }
+                    }
+                case .error(let error):
+                    guard let self = self else { return }
+                    self.store.toast = .init(style: .error, message: error.message)
+                }
+            }
+        }.store(in: &disposeBag)
+    }
 }

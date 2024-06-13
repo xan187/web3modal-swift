@@ -80,6 +80,8 @@ public class Web3ModalClient {
         return analyticsService.isAnalyticsEnabled
     }
 
+//    add user authenticated publisher authResponsePublisher+SIWE
+
     // MARK: - Private Properties
 
     private let signClient: SignClient
