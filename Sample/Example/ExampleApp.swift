@@ -58,7 +58,7 @@ class ExampleApp: App {
             projectId: projectId,
             metadata: metadata,
             crypto: DefaultCryptoProvider(),
-            authRequestParams: .stub(),
+            authRequestParams: nil,
             customWallets: [
                 .init(
                     id: "swift-sample",
