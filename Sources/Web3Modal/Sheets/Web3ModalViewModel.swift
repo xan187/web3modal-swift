@@ -64,10 +64,6 @@ class Web3ModalViewModel: ObservableObject {
             .sink { [weak self] session in
                 guard let self = self else { return }
                 self.handleNewSession(session: session)
-                if Web3Modal.instance.authenticatedSessionsDisabled {
-                    self.routeToProfile()
-                    return
-                }
                 if supportsAuthenticatedSession {
                     self.handleSIWEFallback()
                 } else {
