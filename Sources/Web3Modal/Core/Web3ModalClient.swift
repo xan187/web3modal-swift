@@ -86,6 +86,8 @@ public class Web3ModalClient {
 
     internal let SIWEAuthenticationPublisherSubject = PassthroughSubject<Result<(message: String, signature: String), SIWEAuthenticationError>, Never>()
 
+    internal var authenticatedSessionsDisabled = false
+
     // MARK: - Private Properties
 
     private let signClient: SignClient
@@ -130,7 +132,8 @@ public class Web3ModalClient {
     public func connect(walletUniversalLink: String?) async throws -> WalletConnectURI? {
         logger.debug("Connecting Application")
         do {
-            if let authParams = Web3Modal.config.authRequestParams {
+            if let authParams = Web3Modal.config.authRequestParams,
+               !authenticatedSessionsDisabled {
                 return try await signClient.authenticate(authParams, walletUniversalLink: walletUniversalLink)
             } else {
                 let pairingURI = try await pairingClient.create()
@@ -377,13 +380,11 @@ public class Web3ModalClient {
         analyticsService.disable()
     }
 
-#if DEBUG
     public func disableAuthenticatedSessions() {
-        Web3Modal.viewModel.authenticatedSessionsDisabled = true
+        authenticatedSessionsDisabled = true
     }
 
     public func enableAuthenticatedSessions() {
-        Web3Modal.viewModel.authenticatedSessionsDisabled = false
+        authenticatedSessionsDisabled = false
     }
-#endif
 }

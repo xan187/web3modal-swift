@@ -109,6 +109,7 @@ class ExampleApp: App {
                 AlertPresenter.present(message: "User authentication error: \(error)", type: .error)
             }
         }.store(in: &disposeBag)
+        Web3Modal.instance.disableAuthenticatedSessions()
     }
 
     var body: some Scene {
