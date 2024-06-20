@@ -80,6 +80,12 @@ public class Web3ModalClient {
         return analyticsService.isAnalyticsEnabled
     }
 
+    public var SIWEAuthenticationPublisher: AnyPublisher<Result<(message: String, signature: String), SIWEAuthenticationError>, Never> {
+        return SIWEAuthenticationPublisherSubject.eraseToAnyPublisher()
+    }
+
+    internal let SIWEAuthenticationPublisherSubject = PassthroughSubject<Result<(message: String, signature: String), SIWEAuthenticationError>, Never>()
+
     // MARK: - Private Properties
 
     private let signClient: SignClient

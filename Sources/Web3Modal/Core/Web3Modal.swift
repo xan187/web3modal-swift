@@ -141,7 +141,8 @@ public class Web3Modal {
             store: store,
             w3mApiInteractor: w3mApiInteractor,
             signInteractor: signInteractor,
-            blockchainApiInteractor: blockchainApiInteractor
+            blockchainApiInteractor: blockchainApiInteractor,
+            supportsAuthenticatedSession: (config.authRequestParams != nil)
         )
         
         Task {
@@ -225,6 +226,7 @@ public class Web3Modal {
             try? await w3mApiInteractor.fetchWalletImages(for: [wallet])
         }
     }
+
 }
 
 #if canImport(UIKit)

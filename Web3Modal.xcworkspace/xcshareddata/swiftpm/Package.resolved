@@ -100,6 +100,15 @@
       }
     },
     {
+      "identity" : "swiftmessages",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftKickMobile/SwiftMessages",
+      "state" : {
+        "revision" : "b899be48a61ddb209695a8d5e411189b704a7fa3",
+        "version" : "10.0.0"
+      }
+    },
+    {
       "identity" : "wallet-mobile-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/WalletConnect/wallet-mobile-sdk",
@@ -113,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/WalletConnect/WalletConnectSwiftV2",
       "state" : {
-        "revision" : "7cac840104d75b8076ff36908cb6f95ed230d53d",
-        "version" : "1.19.1"
+        "revision" : "8ab4897841a5d04b832f2010a542a246be37998d",
+        "version" : "1.19.3"
       }
     },
     {
