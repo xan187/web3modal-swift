@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/WalletConnect/WalletConnectSwiftV2",
-            .upToNextMinor(from: "1.19.3")
+            branch: "pairing-expiry-reduction"
         ),
         .package(
             url: "https://github.com/WalletConnect/QRCode",
