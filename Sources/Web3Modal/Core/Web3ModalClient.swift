@@ -133,31 +133,13 @@ public class Web3ModalClient {
             if let authParams = Web3Modal.config.authRequestParams {
                 return try await signClient.authenticate(authParams, walletUniversalLink: walletUniversalLink)
             } else {
-                let pairingURI = try await pairingClient.create()
-                try await signClient.connect(
+                let pairingURI = try await signClient.connect(
                     requiredNamespaces: Web3Modal.config.sessionParams.requiredNamespaces,
                     optionalNamespaces: Web3Modal.config.sessionParams.optionalNamespaces,
-                    sessionProperties: Web3Modal.config.sessionParams.sessionProperties,
-                    topic: pairingURI.topic
+                    sessionProperties: Web3Modal.config.sessionParams.sessionProperties
                 )
                 return pairingURI
             }
-        } catch {
-            Web3Modal.config.onError(error)
-            throw error
-        }
-    }
-
-    /// Ping method allows to check if peer client is online and is subscribing for given topic
-    ///
-    ///  Should Error:
-    ///  - When the session topic is not found
-    ///
-    /// - Parameters:
-    ///   - topic: Topic of a session
-    public func ping(topic: String) async throws {
-        do {
-            try await pairingClient.ping(topic: topic)
         } catch {
             Web3Modal.config.onError(error)
             throw error
