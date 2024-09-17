@@ -18,7 +18,7 @@ import UIKit
 /// Web3Modal.configure(projectId: PROJECT_ID, metadata: metadata)
 /// Web3Modal.instance.getSessions()
 /// ```
-@available(*, deprecated, message: "Web3Modal has been deprecated. Please migrate to AppKit, available at https://github.com/reown-com/reown-swift")
+@available(*, deprecated, message: "WalletConnect Inc is now Reown. As part of this transition, we are deprecating a number of repositories/packages across our supported platforms, and transitioning to their equivalents published under the Reown organization. This repository is now considered deprecated and will reach End-of-Life on February 17th 2025. For more details, including migration guides please see: https://docs.reown.com/advanced/walletconnect-deprecations")
 public class Web3Modal {
     /// Web3Modalt client instance
     public static var instance: Web3ModalClient = {
